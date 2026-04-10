@@ -1,0 +1,273 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans,sans-serif)}
+.wrap{padding:1rem 0}
+.tabs{display:flex;gap:8px;margin-bottom:1.25rem}
+.tab{padding:6px 16px;font-size:13px;font-weight:500;border:0.5px solid var(--color-border-secondary);border-radius:20px;cursor:pointer;background:transparent;color:var(--color-text-secondary);transition:all .15s}
+.tab.active{background:var(--color-background-primary);color:var(--color-text-primary);border-color:var(--color-border-primary)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:1rem}
+.li{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--color-text-secondary)}
+.ld{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.gantt-scroll{overflow-x:auto}
+.gantt{width:100%;border-collapse:collapse;font-size:12px;min-width:560px}
+.gantt th{font-weight:500;font-size:10.5px;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.04em;padding:4px 6px;border-bottom:0.5px solid var(--color-border-secondary);white-space:nowrap}
+.gantt td{padding:3px 6px;border-bottom:0.5px solid var(--color-border-tertiary);vertical-align:middle}
+.gantt tr:hover td{background:var(--color-background-secondary)}
+.gantt .total-row td{border-top:1.5px solid var(--color-border-secondary);font-weight:500}
+.ph{font-weight:500;color:var(--color-text-primary);font-size:12px;white-space:nowrap}
+.ps{font-size:10.5px;color:var(--color-text-secondary)}
+.jh{text-align:right;color:var(--color-text-secondary);font-size:11px;white-space:nowrap;min-width:42px}
+.ab{font-size:10px;padding:1px 6px;border-radius:10px;white-space:nowrap;font-weight:500}
+.acp{background:#EEEDFE;color:#3C3489}.ais{background:#E1F5EE;color:#085041}.aap{background:#FAEEDA;color:#633806}
+.ct{text-align:right;font-size:11px;color:var(--color-text-secondary);white-space:nowrap}
+.track{background:var(--color-background-secondary);border-radius:4px;height:15px;position:relative;min-width:180px}
+.bar{height:15px;border-radius:4px;position:absolute;top:0;opacity:.85;cursor:pointer;transition:opacity .15s}
+.bar:hover{opacity:1}
+.vac{height:15px;position:absolute;top:0;background:repeating-linear-gradient(45deg,#88888815,#88888815 3px,#88888828 3px,#88888828 6px);border-radius:2px;border:0.5px solid #aaa5;z-index:2}
+.month-row{display:flex;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:4px}
+.mc{text-align:center;font-size:9.5px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.04em;padding-bottom:3px;flex:1;min-width:0;overflow:hidden}
+.mc.vacc{color:#888;background:repeating-linear-gradient(45deg,transparent,transparent 3px,#8882 3px,#8882 6px);border-radius:2px}
+.tip{position:absolute;background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:8px;padding:7px 11px;font-size:11.5px;color:var(--color-text-primary);z-index:99;pointer-events:none;display:none;white-space:nowrap;line-height:1.7;bottom:22px;left:0;transform:translateX(-25%)}
+.ev-marker{position:absolute;top:-2px;bottom:-2px;width:2px;border-radius:1px;z-index:10}
+.ev-lbl{position:absolute;font-size:9px;font-weight:500;white-space:nowrap;top:-16px;transform:translateX(-50%);color:#E24B4A}
+.summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:1.25rem}
+.sc{background:var(--color-background-secondary);border-radius:8px;padding:.75rem 1rem}
+.sl{font-size:11px;color:var(--color-text-secondary);margin-bottom:3px}
+.sv{font-size:16px;font-weight:500;color:var(--color-text-primary)}
+.ok{color:var(--color-text-success)}.warn{color:var(--color-text-warning)}.danger{color:var(--color-text-danger)}
+.ev-note{margin-top:1rem;padding:10px 14px;background:var(--color-background-warning);border-radius:8px;font-size:11.5px;color:var(--color-text-secondary);line-height:1.9;display:none}
+.ev-note strong{color:var(--color-text-primary)}
+.note-small{font-size:10.5px;color:var(--color-text-secondary);margin-top:5px}
+</style>
+
+<div class="wrap">
+<div class="tabs">
+  <button class="tab active" onclick="show('sans')">Sans imprévus</button>
+  <button class="tab" onclick="show('avec')">Avec imprévus</button>
+</div>
+
+<div class="legend">
+  <div class="li"><div class="ld" style="background:#534AB7"></div>CP</div>
+  <div class="li"><div class="ld" style="background:#0F6E56"></div>IS</div>
+  <div class="li"><div class="ld" style="background:#BA7517"></div>AP</div>
+  <div class="li"><div class="ld" style="background:#b4b2a9;border:0.5px solid #aaa6"></div>Vacances août</div>
+  <div class="li"><div class="ld" style="background:#E24B4A;border-radius:1px;width:4px"></div>Glissement imprévus</div>
+</div>
+
+<div id="view-sans"></div>
+<div id="view-avec" style="display:none"></div>
+
+<div class="summary" id="sum-sans">
+  <div class="sc"><div class="sl">Début</div><div class="sv">13 avr. 2026</div></div>
+  <div class="sc"><div class="sl">Livraison estimée</div><div class="sv ok" id="dlv-sans">—</div></div>
+  <div class="sc"><div class="sl">Budget</div><div class="sv ok">87 850 €</div></div>
+  <div class="sc"><div class="sl">Deadline client</div><div class="sv">20 déc. 2026</div></div>
+</div>
+<div class="summary" id="sum-avec" style="display:none">
+  <div class="sc"><div class="sl">Début</div><div class="sv">13 avr. 2026</div></div>
+  <div class="sc"><div class="sl">Livraison estimée</div><div class="sv danger" id="dlv-avec">—</div></div>
+  <div class="sc"><div class="sl">Budget révisé</div><div class="sv danger">98 850 €</div></div>
+  <div class="sc"><div class="sl">Dépassement</div><div class="sv warn">+8 850 €</div></div>
+</div>
+
+<div class="ev-note" id="ev-note">
+  <strong>Événement 1 — Semaine 5 :</strong> IS hospitalisé 15 jours ouvrés → glissement spécifications +8 jours ouvrés (aucun surcoût direct)<br>
+  <strong>Événement 2 — Début développement +5j :</strong> AP1 réduit 65%→40% → perte 15 JH sur ~60 jours → AP externe 22j × 500 € = +11 000 €<br>
+  <strong>Budget révisé : 98 850 €</strong> — sous le seuil +10% (99 000 €) · Option A : maintien périmètre + renfort · Option B : retrait Gamification & Messagerie
+</div>
+</div>
+
+<script>
+const START  = new Date(2026,3,13);
+const AUG_S  = new Date(2026,7,1);
+const AUG_E  = new Date(2026,8,1);
+
+function addWD(d, days){
+  let cur=new Date(d), rem=days;
+  while(rem>0){
+    cur.setDate(cur.getDate()+1);
+    const dw=cur.getDay();
+    if(dw===0||dw===6) continue;
+    if(cur>=AUG_S&&cur<AUG_E) continue;
+    rem--;
+  }
+  return cur;
+}
+function calDays(a,b){return Math.round((b-a)/864e5);}
+function fmt(d){return d.toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'2-digit'});}
+
+const phases=[
+  {name:"Spécifications",   sub:"Entretiens, CRs, dossiers",       jh:32, actor:"IS/CP",ac:"ais",col:"#0F6E56",wd:32, lagWD:0,   cost:33850},
+  {name:"Conception",       sub:"Écrans + programmes + arch. BDD",  jh:26, actor:"AP",  ac:"aap",col:"#BA7517",wd:26, lagWD:28,  cost:7800},
+  {name:"Réalisation + TU", sub:"Écrans (46.5 JH) + prog. (21 JH)",jh:68, actor:"AP",  ac:"aap",col:"#EF9F27",wd:68, lagWD:50,  cost:20400},
+  {name:"Intégration",      sub:"Frontend + backend",               jh:8,  actor:"AP",  ac:"aap",col:"#BA7517",wd:8,  lagWD:114, cost:2400},
+  {name:"Qualité",          sub:"Code review, RGPD/RGAA",           jh:5,  actor:"IS",  ac:"ais",col:"#1D9E75",wd:10, lagWD:104, cost:2500},
+  {name:"Validation",       sub:"Vérif. vs cahier des charges",     jh:5,  actor:"IS",  ac:"ais",col:"#5DCAA5",wd:5,  lagWD:122, cost:2500},
+  {name:"Formation",        sub:"Supports + sessions client",       jh:3,  actor:"IS",  ac:"ais",col:"#1D9E75",wd:3,  lagWD:132, cost:1500},
+  {name:"Accompagnement",   sub:"Suivi du changement",              jh:4,  actor:"CP",  ac:"acp",col:"#7F77DD",wd:10, lagWD:122, cost:2600},
+  {name:"MOE",              sub:"Maîtrise d'œuvre",                 jh:10, actor:"CP",  ac:"acp",col:"#534AB7",wd:150,lagWD:0,   cost:6500},
+  {name:"Encadrement",      sub:"Pilotage, GANTT, reporting",       jh:12, actor:"CP",  ac:"acp",col:"#AFA9EC",wd:150,lagWD:0,   cost:7800},
+];
+
+function buildGantt(containerId, withEv){
+  const container=document.getElementById(containerId);
+  container.innerHTML='';
+  const EV1_SLIP=withEv?8:0;
+
+  const adj=phases.map((ph,i)=>{
+    let lagWD=ph.lagWD, wd=ph.wd;
+    if(withEv){
+      if(i===0){ wd+=EV1_SLIP; }
+      else { lagWD+=EV1_SLIP; }
+    }
+    const s=addWD(START,lagWD);
+    const e=addWD(s,wd);
+    return{...ph,s,e,lagWD,wdAdj:wd};
+  });
+
+  const lastEnd=adj.reduce((a,p)=>p.e>a?p.e:a,adj[0].e);
+  const totalDays=calDays(START,lastEnd)+10;
+  function pct(d){return(calDays(START,d)/totalDays*100).toFixed(2)+'%';}
+  function wpct(a,b){return(calDays(a,b)/totalDays*100).toFixed(2)+'%';}
+
+  const vacSP=calDays(START,AUG_S)/totalDays*100;
+  const vacEP=calDays(START,AUG_E)/totalDays*100;
+  const vacW=vacEP-vacSP;
+
+  const months=[];
+  let cur=new Date(START.getFullYear(),START.getMonth(),1);
+  const endL=new Date(lastEnd); endL.setMonth(endL.getMonth()+2);
+  while(cur<=endL){months.push(new Date(cur));cur.setMonth(cur.getMonth()+1);}
+
+  const scroll=document.createElement('div'); scroll.className='gantt-scroll';
+  const table=document.createElement('table'); table.className='gantt';
+  const thead=document.createElement('thead');
+  const hr=document.createElement('tr');
+  ['Phase','JH','Acteur','Coût',''].forEach((h,i)=>{
+    const th=document.createElement('th');
+    if(i===4){
+      const mrow=document.createElement('div'); mrow.className='month-row';
+      months.forEach(m=>{
+        const mc=document.createElement('div'); mc.className='mc';
+        if(m.getMonth()===7) mc.classList.add('vacc');
+        mc.textContent=m.toLocaleDateString('fr-FR',{month:'short'}).replace('.','').toUpperCase();
+        mrow.appendChild(mc);
+      });
+      th.appendChild(mrow);
+    } else { th.textContent=h; }
+    hr.appendChild(th);
+  });
+  thead.appendChild(hr); table.appendChild(thead);
+
+  const tbody=document.createElement('tbody');
+
+  const EV1_DATE=withEv?addWD(START,4):null;
+  const EV2_DATE=withEv?addWD(START,50+EV1_SLIP+5):null;
+
+  adj.forEach((ph,i)=>{
+    const origEnd=addWD(addWD(START,phases[i].lagWD+(withEv&&i>0?EV1_SLIP:0)),phases[i].wd);
+    const tr=document.createElement('tr');
+
+    const tdN=document.createElement('td');
+    tdN.innerHTML=`<div class="ph">${ph.name}</div><div class="ps">${ph.sub}</div>`;
+    tr.appendChild(tdN);
+
+    const tdJ=document.createElement('td'); tdJ.className='jh'; tdJ.textContent=ph.jh+' JH'; tr.appendChild(tdJ);
+    const tdA=document.createElement('td'); tdA.innerHTML=`<span class="ab ${ph.ac}">${ph.actor}</span>`; tr.appendChild(tdA);
+
+    const tdC=document.createElement('td'); tdC.className='ct';
+    let cStr=ph.cost.toLocaleString('fr-FR')+' €';
+    if(withEv&&i===2) cStr='<span style="color:var(--color-text-danger)">31 400 €*</span>';
+    tdC.innerHTML=cStr; tr.appendChild(tdC);
+
+    const tdB=document.createElement('td');
+    const track=document.createElement('div'); track.className='track';
+
+    const vac=document.createElement('div'); vac.className='vac';
+    vac.style.left=vacSP.toFixed(2)+'%';
+    vac.style.width=(vacW>0?vacW:0).toFixed(2)+'%';
+    track.appendChild(vac);
+
+    if(withEv){
+      [EV1_DATE,EV2_DATE].forEach((evDate,ei)=>{
+        if(!evDate) return;
+        const ep=(calDays(START,evDate)/totalDays*100).toFixed(2)+'%';
+        const mk=document.createElement('div'); mk.className='ev-marker';
+        mk.style.left=ep; mk.style.background='#E24B4A'; track.appendChild(mk);
+        if(i===0){
+          const lbl=document.createElement('div'); lbl.className='ev-lbl';
+          lbl.style.left=ep; lbl.textContent=ei===0?'Acc. IS':'AP1 -40%'; track.appendChild(lbl);
+        }
+      });
+    }
+
+    const bar=document.createElement('div'); bar.className='bar';
+    bar.style.left=pct(ph.s);
+    bar.style.width=wpct(ph.s,origEnd);
+    bar.style.background=ph.col;
+    bar.style.zIndex=3;
+
+    if(withEv&&ph.wdAdj>phases[i].wd){
+      const slip=document.createElement('div'); slip.className='bar';
+      slip.style.left=pct(origEnd);
+      slip.style.width=wpct(origEnd,ph.e);
+      slip.style.background='#E24B4A';
+      slip.style.opacity='0.5';
+      slip.style.zIndex=4;
+      track.appendChild(slip);
+    }
+
+    const tip=document.createElement('div'); tip.className='tip';
+    tip.innerHTML=`<strong>${ph.name}</strong><br>${fmt(ph.s)} → ${fmt(ph.e)}`;
+    if(withEv&&i===0) tip.innerHTML+=`<br><span style="color:#E24B4A;font-size:10.5px">+8j glissement IS</span>`;
+    if(withEv&&i===2) tip.innerHTML+=`<br><span style="color:#E24B4A;font-size:10.5px">+AP externe 22j · +11 000 €</span>`;
+    bar.appendChild(tip);
+    bar.addEventListener('mouseenter',()=>tip.style.display='block');
+    bar.addEventListener('mouseleave',()=>tip.style.display='none');
+    track.appendChild(bar); tdB.appendChild(track); tr.appendChild(tdB);
+    tbody.appendChild(tr);
+  });
+
+  const totRow=document.createElement('tr'); totRow.className='total-row';
+  const budgetStr=withEv
+    ?'<span class="danger">98 850 €</span>'
+    :'87 850 €';
+  const statusStr=withEv
+    ?'&nbsp;·&nbsp;<span class="danger">Dépasse potentiellement le 20 déc.</span>'
+    :'&nbsp;·&nbsp;<span class="ok">Dans les délais</span>';
+  totRow.innerHTML=`
+    <td><div class="ph">Total</div></td>
+    <td class="jh">173 JH</td>
+    <td></td>
+    <td class="ct">${budgetStr}</td>
+    <td style="font-size:11px;color:var(--color-text-secondary);padding-left:8px">
+      Livraison : <strong style="color:var(--color-text-primary)">${fmt(lastEnd)}</strong>${statusStr}
+    </td>`;
+  tbody.appendChild(totRow);
+  table.appendChild(tbody); scroll.appendChild(table); container.appendChild(scroll);
+
+  if(withEv){
+    const note=document.createElement('p'); note.className='note-small';
+    note.textContent='* Réalisation+TU : 20 400 € (interne) + 11 000 € (AP externe J2EE) = 31 400 €';
+    container.appendChild(note);
+  }
+
+  const dlvEl=document.getElementById('dlv-'+(withEv?'avec':'sans'));
+  if(dlvEl) dlvEl.textContent=fmt(lastEnd);
+}
+
+buildGantt('view-sans',false);
+buildGantt('view-avec',true);
+
+function show(mode){
+  document.getElementById('view-sans').style.display=mode==='sans'?'':'none';
+  document.getElementById('view-avec').style.display=mode==='avec'?'':'none';
+  document.getElementById('sum-sans').style.display=mode==='sans'?'':'none';
+  document.getElementById('sum-avec').style.display=mode==='avec'?'':'none';
+  document.getElementById('ev-note').style.display=mode==='avec'?'block':'none';
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    t.classList.toggle('active',(i===0&&mode==='sans')||(i===1&&mode==='avec'));
+  });
+}
+</script>

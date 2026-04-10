@@ -1,0 +1,971 @@
+<meta charset="UTF-8">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans,'Segoe UI',sans-serif)}
+:root{
+  --green:#2d6a2d;--green-light:#e8f0e8;--green-mid:#4a8c4a;
+  --orange:#d94f2c;--beige:#f0ede0;--beige2:#e8e4d0;
+  --text:#1a1a1a;--text2:#555;--text3:#888;
+  --white:#fff;--border:#ddd;--red:#c0392b;--gold:#b07d2a;
+}
+.app{display:flex;flex-direction:column;height:100vh;min-height:600px;background:var(--beige)}
+
+/* NAV TABS */
+.nav-tabs{display:flex;gap:6px;padding:12px 16px 8px;background:var(--white);border-bottom:1px solid var(--border);flex-wrap:wrap}
+.nav-tab{padding:6px 12px;border-radius:20px;border:1px solid var(--border);font-size:12px;cursor:pointer;background:var(--beige);color:var(--text2);transition:all .2s}
+.nav-tab.active{background:var(--green);color:var(--white);border-color:var(--green)}
+.content{flex:1;overflow:auto;padding:0 0 80px}
+
+/* MOBILE FRAME */
+.mobile-frame{width:100%;max-width:390px;margin:0 auto;background:var(--beige);min-height:calc(100vh - 60px);position:relative}
+.phone-header{background:var(--beige);padding:12px 16px 8px;border-bottom:2px solid var(--text);position:sticky;top:0;z-index:10}
+.brand{font-family:Georgia,serif;font-weight:700;font-size:16px;text-align:center;letter-spacing:1px}
+.page-title{font-size:22px;font-weight:700;color:var(--green);text-align:center;padding:8px 0 6px;letter-spacing:1px}
+.phone-bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:390px;background:var(--beige);border-top:2px solid var(--text);display:flex;justify-content:space-around;align-items:center;padding:8px 0 12px;z-index:20}
+.bot-btn{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;font-size:10px;color:var(--text2);background:none;border:none}
+.bot-btn.active{color:var(--green)}
+.bot-icon{width:24px;height:24px;display:flex;align-items:center;justify-content:center}
+
+/* WEB FRAME */
+.web-frame{width:100%;background:var(--white);min-height:calc(100vh - 60px)}
+.web-header{background:var(--green);color:var(--white);padding:12px 24px;display:flex;align-items:center;justify-content:space-between}
+.web-header .brand{color:var(--white);text-align:left}
+.web-nav{display:flex;gap:4px}
+.web-nav-btn{padding:6px 14px;background:rgba(255,255,255,.15);border:none;color:var(--white);border-radius:4px;cursor:pointer;font-size:13px}
+.web-nav-btn.active{background:rgba(255,255,255,.35)}
+.web-body{display:grid;grid-template-columns:200px 1fr;min-height:calc(100vh - 100px)}
+.web-sidebar{background:var(--green-light);border-right:1px solid var(--border);padding:16px 0}
+.side-item{padding:10px 20px;font-size:13px;cursor:pointer;color:var(--text2);display:flex;align-items:center;gap:8px;transition:.15s}
+.side-item:hover,.side-item.active{background:var(--green-light);color:var(--green);font-weight:500}
+.web-content{padding:24px;overflow:auto}
+
+/* COMPONENTS */
+.section-divider{height:2px;background:var(--text);margin:0}
+.card{background:var(--white);border-radius:8px;padding:12px;margin:10px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.card-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer}
+.card-row:last-child{border-bottom:none}
+.avatar{width:40px;height:40px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:500}
+.badge-green{background:#d4edda;color:#155724}
+.badge-orange{background:#fff3cd;color:#856404}
+.badge-red{background:#f8d7da;color:#721c24}
+.badge-blue{background:#cce5ff;color:#004085}
+.badge-gray{background:#e2e3e5;color:#383d41}
+.btn{padding:8px 16px;border-radius:6px;border:none;cursor:pointer;font-size:13px;font-weight:500;transition:.15s}
+.btn-green{background:var(--green);color:var(--white)}
+.btn-outline{background:transparent;border:1.5px solid var(--green);color:var(--green)}
+.btn-red{background:var(--red);color:var(--white)}
+.btn-orange{background:#e67e22;color:var(--white)}
+.btn-sm{padding:4px 10px;font-size:11px}
+.input{width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:6px;font-size:13px;background:var(--white);color:var(--text);margin:4px 0 10px}
+.label{font-size:12px;font-weight:500;color:var(--text2);margin-top:8px;display:block}
+.row{display:flex;gap:8px;align-items:center}
+.col{display:flex;flex-direction:column}
+.flex-between{display:flex;justify-content:space-between;align-items:center}
+.stat-box{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;flex:1}
+.stat-num{font-size:24px;font-weight:700;color:var(--green)}
+.stat-label{font-size:11px;color:var(--text3);margin-top:2px}
+.map-placeholder{background:#d4e6c3;border:1.5px solid var(--green);border-radius:4px;height:220px;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--green);position:relative;overflow:hidden;margin:0}
+.pin{position:absolute;font-size:20px;cursor:pointer}
+.tag{display:inline-block;background:var(--green);color:var(--white);padding:3px 8px;border-radius:4px;font-size:11px;margin:2px}
+.progress{background:#eee;border-radius:10px;height:8px;overflow:hidden;margin:4px 0 8px}
+.progress-fill{height:100%;background:var(--green);border-radius:10px;transition:.5s}
+.notif-dot{width:8px;height:8px;background:var(--red);border-radius:50%;display:inline-block;margin-left:4px}
+.obs-img{width:100%;height:140px;object-fit:cover;border-radius:6px;background:#c8ddc8;display:flex;align-items:center;justify-content:center;font-size:30px}
+.screen{display:none}
+.screen.active{display:block}
+.tab-bar{display:flex;border-bottom:1px solid var(--border);margin:10px 12px 0}
+.tab{padding:8px 14px;font-size:12px;cursor:pointer;color:var(--text3);border-bottom:2px solid transparent}
+.tab.active{color:var(--green);border-bottom-color:var(--green);font-weight:500}
+.gamif-card{background:linear-gradient(135deg,var(--green),var(--green-mid));color:var(--white);border-radius:10px;padding:14px;margin:8px 12px}
+.xp-bar{background:rgba(255,255,255,.3);border-radius:10px;height:10px;margin:8px 0}
+.xp-fill{background:var(--white);border-radius:10px;height:100%}
+.achievement{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--border)}
+.ach-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.campaign-card{background:var(--white);border-radius:8px;margin:8px 12px;overflow:hidden;border:1px solid var(--border)}
+.camp-header{background:var(--green);color:var(--white);padding:10px 14px}
+.camp-body{padding:12px 14px}
+.msg-bubble{max-width:75%;padding:10px 14px;border-radius:12px;font-size:13px;margin:4px 0;line-height:1.5}
+.msg-out{background:var(--green);color:var(--white);margin-left:auto;border-bottom-right-radius:4px}
+.msg-in{background:#e9e9e9;color:var(--text);border-bottom-left-radius:4px}
+.web-table{width:100%;border-collapse:collapse;font-size:13px}
+.web-table th{background:var(--green);color:var(--white);padding:8px 12px;text-align:left;font-weight:500}
+.web-table td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.web-table tr:hover td{background:var(--green-light)}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat-card-web{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:16px;text-align:center}
+.stat-n-web{font-size:28px;font-weight:700;color:var(--green)}
+.stat-l-web{font-size:12px;color:var(--text3);margin-top:4px}
+</style>
+
+<div class="app">
+  <!-- TOP NAV TABS -->
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showView('mobile')">📱 Mobile — Utilisateur</button>
+    <button class="nav-tab" onclick="showView('expert')">💻 Expert (web)</button>
+    <button class="nav-tab" onclick="showView('admin')">🛡️ Admin (web)</button>
+  </div>
+
+  <!-- ===== MOBILE VIEW ===== -->
+  <div id="view-mobile" class="content">
+    <div class="mobile-frame">
+      <div class="phone-header">
+        <div class="brand">Quesabio</div>
+      </div>
+
+      <!-- MOBILE SCREEN SELECTOR -->
+      <div style="display:flex;flex-wrap:wrap;gap:4px;padding:8px 10px;background:var(--white);border-bottom:1px solid var(--border)">
+        <button class="nav-tab active" style="font-size:11px;padding:4px 8px" onclick="showMobileScreen('carte')">Carte</button>
+        <button class="nav-tab" style="font-size:11px;padding:4px 8px" onclick="showMobileScreen('observation')">Observation</button>
+        <button class="nav-tab" style="font-size:11px;padding:4px 8px" onclick="showMobileScreen('recenser')">Recenser</button>
+        <button class="nav-tab" style="font-size:11px;padding:4px 8px" onclick="showMobileScreen('identification')">Identification</button>
+        <button class="nav-tab" style="font-size:11px;padding:4px 8px" onclick="showMobileScreen('validation')">Validation</button>
+        <button class="nav-tab" style="font-size:11px;padding:4px 8px" onclick="showMobileScreen('messages')">Messages</button>
+        <button class="nav-tab" style="font-size:11px;padding:4px 8px" onclick="showMobileScreen('profil')">Profil</button>
+        <button class="nav-tab" style="font-size:11px;padding:4px 8px" onclick="showMobileScreen('gamification')">Gamification</button>
+        <button class="nav-tab" style="font-size:11px;padding:4px 8px" onclick="showMobileScreen('campagnes')">Campagnes</button>
+        <button class="nav-tab" style="font-size:11px;padding:4px 8px" onclick="showMobileScreen('signalement')">Signalement</button>
+      </div>
+
+      <!-- CARTE -->
+      <div id="ms-carte" class="screen active">
+        <div class="page-title">CARTE</div>
+        <div class="section-divider"></div>
+        <div class="map-placeholder" style="margin:10px;height:280px;border-radius:8px">
+          <div style="position:absolute;color:#555;font-size:13px;top:10px;left:10px">Carte OpenStreetMap — Lille</div>
+          <div class="pin" style="top:30%;left:55%">📍</div>
+          <div class="pin" style="top:55%;left:25%">📍</div>
+          <div class="pin" style="top:65%;left:60%">🟢</div>
+          <div style="position:absolute;bottom:20px;right:16px;background:var(--white);border-radius:8px;padding:6px 10px;border:1.5px solid var(--green);display:flex;align-items:center;gap:8px">
+            <div style="width:44px;height:44px;background:#c8ddc8;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:20px">🌿</div>
+            <div style="font-size:12px;font-weight:600;color:var(--green)">Chêne pédonculé</div>
+          </div>
+        </div>
+        <div style="padding:0 12px;display:flex;gap:8px;flex-wrap:wrap">
+          <span class="tag">🌳 Arbres</span><span class="tag" style="background:#888">🐦 Animaux</span><span class="tag" style="background:#c07">🌸 Fleurs</span>
+          <button class="btn btn-outline btn-sm" style="margin-left:auto">Filtres</button>
+        </div>
+      </div>
+
+      <!-- OBSERVATION -->
+      <div id="ms-observation" class="screen">
+        <div style="padding:10px 14px;display:flex;align-items:center;gap:8px">
+          <button class="btn btn-outline btn-sm">←</button>
+          <div class="page-title" style="font-size:18px;padding:0">OBSERVATION</div>
+          <button class="btn btn-red btn-sm" style="margin-left:auto">⚑ Signaler</button>
+        </div>
+        <div class="section-divider"></div>
+        <div style="margin:10px;background:#c8ddc8;border-radius:8px;height:150px;display:flex;align-items:center;justify-content:center;font-size:40px">🌳</div>
+        <div class="card">
+          <div style="font-size:17px;font-weight:700;text-align:center">Chêne pédonculé</div>
+          <div style="font-size:12px;color:var(--text3);text-align:center;margin-bottom:8px">Observé par Denis Vellard</div>
+          <div class="section-divider" style="margin:0 -12px 10px"></div>
+          <div class="row" style="gap:16px">
+            <div class="row"><span style="font-size:16px">📍</span><span style="font-size:12px">Lille</span></div>
+            <div class="row"><span style="font-size:16px">📅</span><span style="font-size:12px">25 jan 2026</span></div>
+            <div class="row"><span style="font-size:16px">🗺️</span><span style="font-size:12px">3,2 km</span></div>
+          </div>
+          <div style="margin-top:10px">
+            <div style="font-weight:600;font-size:13px;margin-bottom:4px">Caractéristiques :</div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.6">Grand arbre européen à longue durée de vie. Reconnaissable à ses feuilles lobées et ses glands portés par de longues tiges (pédoncules).</div>
+          </div>
+          <div class="row" style="margin-top:10px;gap:8px">
+            <span class="badge badge-green">✓ Validé</span>
+            <button class="btn btn-outline btn-sm">Partager</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RECENSER -->
+      <div id="ms-recenser" class="screen">
+        <div class="page-title">RECENSER</div>
+        <div class="section-divider"></div>
+        <div style="margin:10px;background:#c8ddc8;border-radius:8px;height:180px;display:grid;grid-template-columns:repeat(6,1fr);overflow:hidden">
+          <!-- photo grid placeholder -->
+          <div style="background:#a0c4a0"></div><div style="background:#b4d4b4"></div><div style="background:#8cb88c"></div>
+          <div style="background:#c0d8c0"></div><div style="background:#98c498"></div><div style="background:#aacfaa"></div>
+          <div style="background:#b8d8b8"></div><div style="background:#90bc90"></div><div style="background:#c4dcc4"></div>
+          <div style="background:#9cc89c"></div><div style="background:#b0d0b0"></div><div style="background:#84b884"></div>
+        </div>
+        <div style="padding:0 14px;display:flex;flex-direction:column;gap:10px;margin-top:10px">
+          <button class="btn btn-outline" style="width:100%">📷 Importer depuis la galerie</button>
+          <button class="btn btn-green" style="width:100%">🌐 Mode en ligne</button>
+          <button class="btn" style="width:100%;background:var(--beige2);color:var(--text2);border:1.5px solid var(--border)">🏕️ Mode hors ligne</button>
+          <div style="text-align:center"><a style="font-size:13px;color:var(--green);text-decoration:underline;cursor:pointer">Voir les validations en cours →</a></div>
+        </div>
+      </div>
+
+      <!-- IDENTIFICATION -->
+      <div id="ms-identification" class="screen">
+        <div class="page-title">RÉSULTAT</div>
+        <div class="section-divider"></div>
+        <div style="margin:10px;background:#c8ddc8;border-radius:8px;height:130px;display:flex;align-items:center;justify-content:center;font-size:40px">🌿</div>
+        <div class="card">
+          <div style="font-size:17px;font-weight:700;text-align:center">Chêne pédonculé</div>
+          <div style="text-align:center;margin:6px 0">
+            <span class="badge badge-green">Confiance : 87%</span>
+          </div>
+          <div class="progress"><div class="progress-fill" style="width:87%"></div></div>
+          <div style="font-size:11px;color:var(--text3);text-align:center;margin-bottom:8px">Observé à Lille — 25 jan 2026 — à 3,2 km</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:12px">Grand arbre européen à longue durée de vie. Feuilles lobées, glands pédonculés.</div>
+          <div class="row" style="gap:8px;flex-wrap:wrap">
+            <button class="btn btn-green" style="flex:1">✓ Recenser</button>
+            <button class="btn btn-outline" style="flex:1">✏️ Corriger</button>
+          </div>
+          <div style="text-align:center;margin-top:8px">
+            <a style="font-size:12px;color:var(--green);text-decoration:underline;cursor:pointer">+ Recenser une nouvelle espèce</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- VALIDATION -->
+      <div id="ms-validation" class="screen">
+        <div class="page-title">VALIDATIONS</div>
+        <div class="section-divider"></div>
+        <div class="tab-bar">
+          <div class="tab active">En attente</div>
+          <div class="tab">Validées <span class="badge badge-green" style="font-size:10px">2</span></div>
+          <div class="tab">Refusées <span class="badge badge-red" style="font-size:10px">1</span></div>
+        </div>
+        <div class="card-row">
+          <div style="width:50px;height:50px;background:#c8ddc8;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px">🌿</div>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:600">Chêne pédonculé</div>
+            <div style="font-size:11px;color:var(--text3)">🌳 Arbre — Soumis 25 jan à 14:26</div>
+            <span class="badge badge-orange" style="margin-top:4px">En attente</span>
+          </div>
+          <button class="btn btn-outline btn-sm">Détails</button>
+        </div>
+      </div>
+
+      <!-- MESSAGES -->
+      <div id="ms-messages" class="screen">
+        <div class="page-title">MESSAGES</div>
+        <div class="section-divider"></div>
+        <div class="tab-bar">
+          <div class="tab active">Discussions</div>
+          <div class="tab">Groupes</div>
+          <div class="tab">Invitations <span class="badge badge-green" style="font-size:10px">2</span></div>
+        </div>
+        <div class="card-row">
+          <div class="avatar">👤</div>
+          <div style="flex:1">
+            <div class="flex-between"><span style="font-size:13px;font-weight:600">Axel Martin</span><span style="font-size:11px;color:var(--green);font-weight:600">13:45</span></div>
+            <div style="font-size:12px;color:var(--text3)">Merci pour votre aide</div>
+          </div>
+          <div style="width:18px;height:18px;background:var(--green);border-radius:50%;font-size:10px;color:var(--white);display:flex;align-items:center;justify-content:center">1</div>
+        </div>
+        <div class="card-row">
+          <div class="avatar">👤</div>
+          <div style="flex:1">
+            <div class="flex-between"><span style="font-size:13px;font-weight:600">Maëlle Dubois</span><span style="font-size:11px;color:var(--text3)">18:54</span></div>
+            <div style="font-size:12px;color:var(--text3)">Pas de souci !</div>
+          </div>
+        </div>
+        <div class="card-row" style="background:var(--green-light)">
+          <div class="avatar" style="background:#d4edda">🏕️</div>
+          <div style="flex:1">
+            <div class="flex-between"><span style="font-size:13px;font-weight:600">Campagne LPO Lille</span><span class="badge badge-green" style="font-size:10px">Groupe</span></div>
+            <div style="font-size:12px;color:var(--text3)">12 participants — RDV dimanche 9h</div>
+          </div>
+          <div style="width:18px;height:18px;background:var(--green);border-radius:50%;font-size:10px;color:var(--white);display:flex;align-items:center;justify-content:center">3</div>
+        </div>
+        <div class="card-row">
+          <div class="avatar">👤</div>
+          <div style="flex:1">
+            <div class="flex-between"><span style="font-size:13px;font-weight:600">Sébastien Lefeves</span><span style="font-size:11px;color:var(--text3)">Jeu</span></div>
+            <div style="font-size:12px;color:var(--text3)">Magnifique !</div>
+          </div>
+          <div style="width:18px;height:18px;background:var(--green);border-radius:50%;font-size:10px;color:var(--white);display:flex;align-items:center;justify-content:center">1</div>
+        </div>
+      </div>
+
+      <!-- PROFIL -->
+      <div id="ms-profil" class="screen">
+        <div class="page-title">PROFIL</div>
+        <div class="section-divider"></div>
+        <div style="display:flex;flex-direction:column;align-items:center;padding:14px">
+          <div style="width:64px;height:64px;background:#333;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative">
+            <span style="font-size:28px;color:var(--white)">👤</span>
+            <div style="position:absolute;bottom:-2px;right:-2px;background:var(--green);color:var(--white);border-radius:50%;width:22px;height:22px;font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:700">37</div>
+          </div>
+          <div style="font-size:16px;font-weight:700;margin-top:8px">Denis Vellard ✏️</div>
+          <button class="btn btn-outline btn-sm" style="margin-top:6px">Voir statistiques →</button>
+        </div>
+        <div class="card" style="margin:0 12px 10px">
+          <div style="font-weight:600;font-size:13px;margin-bottom:8px">📊 Niveau & XP</div>
+          <div class="flex-between" style="font-size:12px;margin-bottom:4px"><span>Naturaliste Confirmé — Niv. 5</span><span style="color:var(--green)">1 240 / 1 500 XP</span></div>
+          <div class="progress"><div class="progress-fill" style="width:83%"></div></div>
+          <div style="font-size:11px;color:var(--text3)">260 XP avant le niveau 6</div>
+        </div>
+        <div style="padding:0 12px;font-weight:600;font-size:13px;margin-bottom:6px">Historique</div>
+        <div style="display:flex;gap:6px;padding:0 12px;overflow-x:auto;padding-bottom:6px">
+          <div style="flex-shrink:0;width:80px;text-align:center">
+            <div style="background:#c8ddc8;border-radius:6px;height:60px;display:flex;align-items:center;justify-content:center;font-size:24px">🌳</div>
+            <div style="font-size:10px;font-weight:500;color:var(--green);margin-top:3px;padding:2px 4px;background:rgba(45,106,45,.1);border-radius:4px">Chêne</div>
+          </div>
+          <div style="flex-shrink:0;width:80px;text-align:center">
+            <div style="background:#d0e8d0;border-radius:6px;height:60px;display:flex;align-items:center;justify-content:center;font-size:24px">🐱</div>
+            <div style="font-size:10px;font-weight:500;color:var(--green);margin-top:3px;padding:2px 4px;background:rgba(45,106,45,.1);border-radius:4px">Chat</div>
+          </div>
+          <div style="flex-shrink:0;width:80px;text-align:center">
+            <div style="background:#b8d4b8;border-radius:6px;height:60px;display:flex;align-items:center;justify-content:center;font-size:24px">🌲</div>
+            <div style="font-size:10px;font-weight:500;color:var(--green);margin-top:3px;padding:2px 4px;background:rgba(45,106,45,.1);border-radius:4px">Tuyas</div>
+          </div>
+          <div style="flex-shrink:0;width:80px;text-align:center">
+            <div style="background:#c4d8c4;border-radius:6px;height:60px;display:flex;align-items:center;justify-content:center;font-size:24px">🐀</div>
+            <div style="font-size:10px;font-weight:500;color:var(--green);margin-top:3px;padding:2px 4px;background:rgba(45,106,45,.1);border-radius:4px">Rat</div>
+          </div>
+        </div>
+        <div style="padding:10px 12px;font-weight:600;font-size:13px;margin-top:4px">Avatars débloqués</div>
+        <div style="display:flex;gap:8px;padding:0 12px;flex-wrap:wrap">
+          <div style="width:50px;height:50px;background:var(--white);border:1.5px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px">🐦</div>
+          <div style="width:50px;height:50px;background:var(--white);border:1.5px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px">🌸</div>
+          <div style="width:50px;height:50px;background:var(--white);border:1.5px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px">🦊</div>
+          <div style="width:50px;height:50px;background:#eee;border:1.5px dashed var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--text3)">🔒</div>
+          <div style="width:50px;height:50px;background:#eee;border:1.5px dashed var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--text3)">🔒</div>
+        </div>
+      </div>
+
+      <!-- GAMIFICATION -->
+      <div id="ms-gamification" class="screen">
+        <div class="page-title">SUCCÈS & XP</div>
+        <div class="section-divider"></div>
+        <div class="gamif-card">
+          <div class="flex-between">
+            <div>
+              <div style="font-size:11px;opacity:.8">Naturaliste Confirmé</div>
+              <div style="font-size:20px;font-weight:700">Niveau 5</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:11px;opacity:.8">Total XP</div>
+              <div style="font-size:20px;font-weight:700">1 240</div>
+            </div>
+          </div>
+          <div class="xp-bar"><div class="xp-fill" style="width:83%"></div></div>
+          <div style="font-size:11px;opacity:.8">Prochain niveau : 1 500 XP</div>
+        </div>
+        <div style="padding:8px 12px;font-weight:600;font-size:13px">Succès débloqués</div>
+        <div class="achievement">
+          <div class="ach-icon" style="background:#fff3cd">🔭</div>
+          <div style="flex:1"><div style="font-size:13px;font-weight:600">Premier recensement</div><div style="font-size:11px;color:var(--text3)">Réaliser sa 1ère observation — +50 XP</div></div>
+          <span class="badge badge-green">✓</span>
+        </div>
+        <div class="achievement">
+          <div class="ach-icon" style="background:#d4edda">🌳</div>
+          <div style="flex:1"><div style="font-size:13px;font-weight:600">Ami des arbres</div><div style="font-size:11px;color:var(--text3)">Observer 10 espèces d'arbres — +100 XP</div></div>
+          <span class="badge badge-green">✓</span>
+        </div>
+        <div class="achievement">
+          <div class="ach-icon" style="background:#cce5ff">🏕️</div>
+          <div style="flex:1"><div style="font-size:13px;font-weight:600">Esprit d'équipe</div><div style="font-size:11px;color:var(--text3)">Participer à une campagne — +150 XP</div></div>
+          <span class="badge badge-blue">En cours</span>
+        </div>
+        <div class="achievement" style="opacity:.5">
+          <div class="ach-icon" style="background:#eee">🦅</div>
+          <div style="flex:1"><div style="font-size:13px;font-weight:600">Ornithologue</div><div style="font-size:11px;color:var(--text3)">Observer 20 espèces d'oiseaux — +200 XP</div></div>
+          <span class="badge badge-gray">🔒</span>
+        </div>
+        <div style="padding:8px 12px;font-weight:600;font-size:13px">Classement</div>
+        <div class="card">
+          <div class="card-row" style="padding:6px 0;border-bottom:1px solid var(--border)">
+            <div style="font-weight:700;color:var(--gold);width:24px">1.</div>
+            <div style="flex:1;font-size:13px">Maëlle Dubois</div>
+            <div style="font-size:13px;color:var(--green);font-weight:600">2 840 XP</div>
+          </div>
+          <div class="card-row" style="padding:6px 0;border-bottom:1px solid var(--border);background:var(--green-light)">
+            <div style="font-weight:700;color:var(--green);width:24px">2.</div>
+            <div style="flex:1;font-size:13px;font-weight:600">Denis Vellard (vous)</div>
+            <div style="font-size:13px;color:var(--green);font-weight:600">1 240 XP</div>
+          </div>
+          <div class="card-row" style="padding:6px 0">
+            <div style="font-weight:700;color:var(--text3);width:24px">3.</div>
+            <div style="flex:1;font-size:13px">Axel Martin</div>
+            <div style="font-size:13px;color:var(--text3);font-weight:600">980 XP</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CAMPAGNES -->
+      <div id="ms-campagnes" class="screen">
+        <div class="page-title">CAMPAGNES</div>
+        <div class="section-divider"></div>
+        <div style="padding:8px 12px;font-size:12px;color:var(--text2)">Participez à des observations collectives organisées par la LPO et d'autres associations.</div>
+        <div class="campaign-card">
+          <div class="camp-header">
+            <div style="font-size:14px;font-weight:700">🦅 Comptage oiseaux — LPO Hauts-de-France</div>
+            <div style="font-size:11px;opacity:.85;margin-top:2px">Du 15 au 17 mai 2026 · Parc de la Citadelle, Lille</div>
+          </div>
+          <div class="camp-body">
+            <div style="font-size:12px;color:var(--text2);margin-bottom:8px">Participez au comptage annuel des oiseaux migrateurs en compagnie d'experts ornithologues.</div>
+            <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:6px">
+              <div style="font-size:12px">👥 12 / 20 participants</div>
+              <div class="progress" style="flex:1;min-width:100px"><div class="progress-fill" style="width:60%"></div></div>
+              <button class="btn btn-green btn-sm">S'inscrire</button>
+            </div>
+          </div>
+        </div>
+        <div class="campaign-card">
+          <div class="camp-header" style="background:#555">
+            <div style="font-size:14px;font-weight:700">🌿 Inventaire flore urbaine</div>
+            <div style="font-size:11px;opacity:.85;margin-top:2px">12 avril 2026 · Centre-ville de Lille</div>
+          </div>
+          <div class="camp-body">
+            <div style="font-size:12px;color:var(--text2);margin-bottom:8px">Recensement des espèces végétales en milieu urbain : parcs, trottoirs, friches.</div>
+            <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:6px">
+              <div style="font-size:12px">👥 7 / 15 participants</div>
+              <div class="progress" style="flex:1;min-width:100px"><div class="progress-fill" style="width:47%"></div></div>
+              <span class="badge badge-green">✓ Inscrit</span>
+            </div>
+          </div>
+        </div>
+        <div class="campaign-card">
+          <div class="camp-header" style="background:var(--text3)">
+            <div style="font-size:14px;font-weight:700">🐸 Nuit des grenouilles</div>
+            <div style="font-size:11px;opacity:.85;margin-top:2px">3 mars 2026 · Marais de Wavrin</div>
+          </div>
+          <div class="camp-body">
+            <div class="flex-between">
+              <span class="badge badge-gray">Terminée</span>
+              <button class="btn btn-outline btn-sm">Voir résultats</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SIGNALEMENT -->
+      <div id="ms-signalement" class="screen">
+        <div style="padding:10px 14px;display:flex;align-items:center;gap:8px">
+          <button class="btn btn-outline btn-sm">←</button>
+          <div class="page-title" style="font-size:18px;padding:0">SIGNALER</div>
+        </div>
+        <div class="section-divider"></div>
+        <div class="card">
+          <div style="font-size:13px;font-weight:600;margin-bottom:10px">Signaler un utilisateur ou une observation</div>
+          <label class="label">Motif du signalement</label>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px">
+            <label style="font-size:13px;display:flex;align-items:center;gap:8px"><input type="radio" name="motif" checked> Contenu inapproprié</label>
+            <label style="font-size:13px;display:flex;align-items:center;gap:8px"><input type="radio" name="motif"> Observation erronée</label>
+            <label style="font-size:13px;display:flex;align-items:center;gap:8px"><input type="radio" name="motif"> Spam / Harcèlement</label>
+            <label style="font-size:13px;display:flex;align-items:center;gap:8px"><input type="radio" name="motif"> Autre</label>
+          </div>
+          <label class="label">Description (facultatif)</label>
+          <textarea class="input" style="height:80px;resize:none" placeholder="Décrivez le problème..."></textarea>
+          <button class="btn btn-red" style="width:100%;margin-top:6px">⚑ Envoyer le signalement</button>
+        </div>
+      </div>
+
+      <!-- BOTTOM NAV -->
+      <div class="phone-bottom">
+        <button class="bot-btn active" onclick="showMobileScreen('carte')">
+          <div class="bot-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+          CARTE
+        </button>
+        <button class="bot-btn" onclick="showMobileScreen('recenser')">
+          <div class="bot-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="7.05" y2="7.05"/></svg></div>
+          RECENSER
+        </button>
+        <button class="bot-btn" onclick="showMobileScreen('campagnes')">
+          <div class="bot-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+          CAMPAGNES
+        </button>
+        <button class="bot-btn" onclick="showMobileScreen('messages')">
+          <div class="bot-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+          MESSAGE
+        </button>
+        <button class="bot-btn" onclick="showMobileScreen('profil')">
+          <div class="bot-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+          PROFIL
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== EXPERT WEB VIEW ===== -->
+  <div id="view-expert" class="content" style="display:none">
+    <div class="web-frame">
+      <div class="web-header">
+        <div class="brand" style="font-size:18px">Quesabio</div>
+        <div class="web-nav">
+          <button class="web-nav-btn active" onclick="showExpertScreen('observations')">Observations</button>
+          <button class="web-nav-btn" onclick="showExpertScreen('especes')">Espèces</button>
+          <button class="web-nav-btn" onclick="showExpertScreen('messages')">Messages</button>
+          <button class="web-nav-btn" onclick="showExpertScreen('profil')">Profil</button>
+        </div>
+      </div>
+      <div class="web-body">
+        <div class="web-sidebar" id="expert-sidebar">
+          <div class="side-item active" onclick="showExpertSub('validees')">✓ Validées</div>
+          <div class="side-item" onclick="showExpertSub('attente')">⏳ En attente</div>
+          <div class="side-item" onclick="showExpertSub('discussion')">💬 En discussion</div>
+          <div class="side-item" onclick="showExpertSub('refusees')">✗ Refusées</div>
+          <div style="border-top:1px solid var(--border);margin:10px 0"></div>
+          <div class="side-item" onclick="showExpertSub('ajout')">＋ Ajouter espèce</div>
+        </div>
+        <div class="web-content">
+
+          <!-- VALIDÉES -->
+          <div id="es-validees" class="screen active">
+            <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--green)">Observations validées</h2>
+            <input type="text" class="input" placeholder="🔍 Rechercher une observation..." style="max-width:400px">
+            <table class="web-table">
+              <thead><tr><th>Photo</th><th>Espèce</th><th>Observateur</th><th>Date</th><th>Localité</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><div style="width:40px;height:40px;background:#c8ddc8;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:20px">🐱</div></td>
+                  <td><strong>Chat domestique</strong></td>
+                  <td>Denis Vellard</td>
+                  <td>20 jan 2026</td>
+                  <td>Lille</td>
+                  <td><button class="btn btn-orange btn-sm">💬 Discuter</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- EN ATTENTE -->
+          <div id="es-attente" class="screen">
+            <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--green)">Observations en attente</h2>
+            <input type="text" class="input" placeholder="🔍 Rechercher..." style="max-width:400px">
+            <table class="web-table">
+              <thead><tr><th>Photo</th><th>Espèce identifiée</th><th>Observateur</th><th>Date</th><th>Confiance IA</th><th>Actions</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><div style="width:40px;height:40px;background:#c8ddc8;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:20px">🐀</div></td>
+                  <td><strong>Rat brun</strong></td>
+                  <td>Denis Vellard</td>
+                  <td>25 jan 2026</td>
+                  <td><span class="badge badge-orange">72%</span></td>
+                  <td style="display:flex;gap:4px;flex-wrap:wrap">
+                    <button class="btn btn-green btn-sm">✓ Accepter</button>
+                    <button class="btn btn-red btn-sm">✗ Refuser</button>
+                    <button class="btn btn-orange btn-sm">💬</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><div style="width:40px;height:40px;background:#d0e8d0;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:20px">🌿</div></td>
+                  <td><strong>Chêne pédonculé</strong></td>
+                  <td>Marie Leconte</td>
+                  <td>26 jan 2026</td>
+                  <td><span class="badge badge-green">87%</span></td>
+                  <td style="display:flex;gap:4px;flex-wrap:wrap">
+                    <button class="btn btn-green btn-sm">✓ Accepter</button>
+                    <button class="btn btn-red btn-sm">✗ Refuser</button>
+                    <button class="btn btn-orange btn-sm">💬</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- DISCUSSION -->
+          <div id="es-discussion" class="screen">
+            <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--green)">Observations en discussion</h2>
+            <div style="background:var(--white);border:1px solid var(--border);border-radius:8px;overflow:hidden">
+              <div style="padding:12px 16px;border-bottom:1px solid var(--border);background:var(--green-light)">
+                <div class="flex-between">
+                  <strong>Chêne sombre — Denis Vellard</strong>
+                  <div style="display:flex;gap:8px">
+                    <button class="btn btn-green btn-sm">✓ Valider</button>
+                    <button class="btn btn-red btn-sm">✗ Refuser</button>
+                  </div>
+                </div>
+              </div>
+              <div style="padding:16px;max-height:200px;overflow:auto">
+                <div style="margin-bottom:10px">
+                  <div class="msg-bubble msg-out" style="margin-left:auto">Cette espèce correspond à un chêne pubescent, pas pédonculé selon moi.</div>
+                </div>
+                <div>
+                  <div style="font-size:11px;color:var(--text3);margin-bottom:2px">Denis Vellard · Expert</div>
+                  <div class="msg-bubble msg-in">Les feuilles sont bien lobées et pédonculées. Cf. photo 2.</div>
+                </div>
+              </div>
+              <div style="padding:10px 16px;border-top:1px solid var(--border);display:flex;gap:8px">
+                <input class="input" style="flex:1;margin:0" placeholder="Répondre...">
+                <button class="btn btn-green btn-sm">Envoyer</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- REFUSÉES -->
+          <div id="es-refusees" class="screen">
+            <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--green)">Observations refusées</h2>
+            <table class="web-table">
+              <thead><tr><th>Espèce soumise</th><th>Observateur</th><th>Motif du refus</th><th>Date</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>Chien (hors périmètre)</td>
+                  <td>Denis Vellard</td>
+                  <td><span class="badge badge-red">Hors périmètre</span></td>
+                  <td>18 jan 2026</td>
+                  <td><button class="btn btn-orange btn-sm">💬 Discuter</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- AJOUT ESPECE -->
+          <div id="es-ajout" class="screen">
+            <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--green)">Ajouter une espèce</h2>
+            <div style="max-width:600px;background:var(--white);border:1px solid var(--border);border-radius:8px;padding:20px">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div><label class="label">Nom commun</label><input class="input" placeholder="Ex : Chêne pédonculé"></div>
+                <div><label class="label">Nom scientifique</label><input class="input" placeholder="Ex : Quercus robur"></div>
+                <div><label class="label">Type</label><select class="input"><option>Arbre</option><option>Arbuste</option><option>Fleur</option><option>Animal</option><option>Oiseau</option><option>Insecte</option></select></div>
+                <div><label class="label">Famille</label><input class="input" placeholder="Ex : Fagaceae"></div>
+              </div>
+              <label class="label">Description</label>
+              <textarea class="input" style="height:100px;resize:none" placeholder="Description de l'espèce..."></textarea>
+              <label class="label">Photos de référence pour identification IA</label>
+              <div style="border:2px dashed var(--border);border-radius:8px;padding:20px;text-align:center;color:var(--text3);font-size:13px;margin-bottom:12px;cursor:pointer">
+                📷 Importer des photos (glisser-déposer ou cliquer)
+              </div>
+              <button class="btn btn-green" style="width:100%">✓ Valider l'ajout</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ADMIN WEB VIEW ===== -->
+  <div id="view-admin" class="content" style="display:none">
+    <div class="web-frame">
+      <div class="web-header">
+        <div class="brand" style="font-size:18px">Quesabio — Administration</div>
+        <div class="web-nav">
+          <button class="web-nav-btn active" onclick="showAdminScreen('dashboard')">Tableau de bord</button>
+          <button class="web-nav-btn" onclick="showAdminScreen('utilisateurs')">Utilisateurs</button>
+          <button class="web-nav-btn" onclick="showAdminScreen('campagnes-admin')">Campagnes</button>
+          <button class="web-nav-btn" onclick="showAdminScreen('signalements')">Signalements</button>
+          <button class="web-nav-btn" onclick="showAdminScreen('archives')">Archives</button>
+          <button class="web-nav-btn" onclick="showAdminScreen('expert-admin')">Experts</button>
+        </div>
+      </div>
+      <div class="web-content" style="padding:24px">
+
+        <!-- DASHBOARD -->
+        <div id="as-dashboard" class="screen active">
+          <h2 style="font-size:20px;font-weight:600;margin-bottom:16px">Tableau de bord</h2>
+          <div class="stat-grid">
+            <div class="stat-card-web"><div class="stat-n-web">235</div><div class="stat-l-web">Utilisateurs<br><span style="color:var(--green);font-size:11px">▲ +13 cette semaine</span></div></div>
+            <div class="stat-card-web"><div class="stat-n-web">320</div><div class="stat-l-web">Espèces recensées<br><span style="color:var(--green);font-size:11px">▲ +37 cette semaine</span></div></div>
+            <div class="stat-card-web"><div class="stat-n-web" style="color:var(--orange)">23</div><div class="stat-l-web">Signalements<br>en attente</div></div>
+            <div class="stat-card-web"><div class="stat-n-web">37</div><div class="stat-l-web">Espèces ajoutées<br>ce mois</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div style="background:var(--white);border:1px solid var(--border);border-radius:8px;padding:16px">
+              <div style="font-weight:600;font-size:14px;margin-bottom:10px">Espèces les plus recensées</div>
+              <div class="card-row" style="padding:6px 0"><span style="width:20px">1.</span><span style="font-size:20px;margin-right:8px">🌲</span><span style="flex:1;font-size:13px">Tuyas</span><span class="badge badge-green">28 obs.</span></div>
+              <div class="card-row" style="padding:6px 0"><span style="width:20px">2.</span><span style="font-size:20px;margin-right:8px">🐱</span><span style="flex:1;font-size:13px">Chat</span><span class="badge badge-blue">22 obs.</span></div>
+              <div class="card-row" style="padding:6px 0"><span style="width:20px">3.</span><span style="font-size:20px;margin-right:8px">🌳</span><span style="flex:1;font-size:13px">Chêne</span><span class="badge badge-orange">18 obs.</span></div>
+            </div>
+            <div style="background:var(--white);border:1px solid var(--border);border-radius:8px;padding:16px">
+              <div style="font-weight:600;font-size:14px;margin-bottom:10px">Répartition des observations</div>
+              <div style="margin-bottom:6px"><div class="flex-between" style="font-size:12px;margin-bottom:2px"><span>🌳 Arbres</span><span>59,5%</span></div><div class="progress"><div class="progress-fill" style="width:60%"></div></div></div>
+              <div style="margin-bottom:6px"><div class="flex-between" style="font-size:12px;margin-bottom:2px"><span>🐾 Animaux</span><span>27%</span></div><div class="progress"><div class="progress-fill" style="width:27%;background:#e67e22"></div></div></div>
+              <div><div class="flex-between" style="font-size:12px;margin-bottom:2px"><span>🌸 Fleurs</span><span>13,5%</span></div><div class="progress"><div class="progress-fill" style="width:14%;background:#e91e8c"></div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- UTILISATEURS -->
+        <div id="as-utilisateurs" class="screen">
+          <h2 style="font-size:20px;font-weight:600;margin-bottom:16px">Gestion des utilisateurs</h2>
+          <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+            <input class="input" placeholder="🔍 Rechercher..." style="max-width:300px;margin:0">
+            <select class="input" style="max-width:150px;margin:0"><option>Tous les rôles</option><option>Utilisateur</option><option>Expert</option><option>Admin</option></select>
+            <select class="input" style="max-width:150px;margin:0"><option>Statut : tous</option><option>Actif</option><option>Désactivé</option></select>
+          </div>
+          <table class="web-table">
+            <thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Statut</th><th>Signalements</th><th>Observations</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>Denis Vellard</strong></td>
+                <td>denis.v@gmail.com</td>
+                <td><span class="badge badge-blue">Expert</span></td>
+                <td><span class="badge badge-green">Actif</span></td>
+                <td>0</td>
+                <td>37</td>
+                <td style="display:flex;gap:4px;flex-wrap:wrap">
+                  <button class="btn btn-outline btn-sm">Activité</button>
+                  <button class="btn btn-orange btn-sm">Désactiver</button>
+                  <button class="btn btn-outline btn-sm">→ Utilisateur</button>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Mathéo Gérard</strong></td>
+                <td>matheo.g@gmail.com</td>
+                <td><span class="badge badge-gray">Utilisateur</span></td>
+                <td><span class="badge badge-green">Actif</span></td>
+                <td><span class="badge badge-orange">2</span></td>
+                <td>12</td>
+                <td style="display:flex;gap:4px;flex-wrap:wrap">
+                  <button class="btn btn-outline btn-sm">Activité</button>
+                  <button class="btn btn-orange btn-sm">Désactiver</button>
+                  <button class="btn btn-green btn-sm">→ Expert</button>
+                </td>
+              </tr>
+              <tr style="opacity:.6">
+                <td><strong>Lucas Moreau</strong></td>
+                <td>lucas.m@gmail.com</td>
+                <td><span class="badge badge-gray">Utilisateur</span></td>
+                <td><span class="badge badge-red">Désactivé</span></td>
+                <td><span class="badge badge-red">5</span></td>
+                <td>3</td>
+                <td style="display:flex;gap:4px;flex-wrap:wrap">
+                  <button class="btn btn-green btn-sm">Réactiver</button>
+                  <button class="btn btn-red btn-sm">Supprimer</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- CAMPAGNES ADMIN -->
+        <div id="as-campagnes-admin" class="screen">
+          <div class="flex-between" style="margin-bottom:16px">
+            <h2 style="font-size:20px;font-weight:600">Gestion des campagnes</h2>
+            <button class="btn btn-green">＋ Nouvelle campagne</button>
+          </div>
+          <table class="web-table">
+            <thead><tr><th>Nom</th><th>Organisateur</th><th>Dates</th><th>Lieu</th><th>Participants</th><th>Statut</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>Comptage oiseaux LPO</strong></td>
+                <td>LPO HdF</td>
+                <td>15-17 mai 2026</td>
+                <td>Citadelle, Lille</td>
+                <td>12 / 20</td>
+                <td><span class="badge badge-green">Ouverte</span></td>
+                <td style="display:flex;gap:4px"><button class="btn btn-outline btn-sm">Éditer</button><button class="btn btn-red btn-sm">Clore</button></td>
+              </tr>
+              <tr>
+                <td><strong>Inventaire flore urbaine</strong></td>
+                <td>Ville de Lille</td>
+                <td>12 avr 2026</td>
+                <td>Centre-ville</td>
+                <td>7 / 15</td>
+                <td><span class="badge badge-green">Ouverte</span></td>
+                <td style="display:flex;gap:4px"><button class="btn btn-outline btn-sm">Éditer</button><button class="btn btn-red btn-sm">Clore</button></td>
+              </tr>
+              <tr>
+                <td><strong>Nuit des grenouilles</strong></td>
+                <td>Association Marais</td>
+                <td>3 mar 2026</td>
+                <td>Marais de Wavrin</td>
+                <td>18 / 18</td>
+                <td><span class="badge badge-gray">Terminée</span></td>
+                <td><button class="btn btn-outline btn-sm">Résultats</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:8px;padding:16px;margin-top:20px;max-width:600px">
+            <div style="font-weight:600;font-size:14px;margin-bottom:12px">Créer une nouvelle campagne</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div><label class="label">Nom de la campagne</label><input class="input" placeholder="Nom..."></div>
+              <div><label class="label">Organisateur</label><input class="input" placeholder="Association / Organisme..."></div>
+              <div><label class="label">Date début</label><input class="input" type="date"></div>
+              <div><label class="label">Date fin</label><input class="input" type="date"></div>
+              <div><label class="label">Lieu</label><input class="input" placeholder="Ville, lieu..."></div>
+              <div><label class="label">Max participants</label><input class="input" type="number" placeholder="20"></div>
+            </div>
+            <label class="label">Description</label>
+            <textarea class="input" style="height:70px;resize:none" placeholder="Décrivez la campagne..."></textarea>
+            <button class="btn btn-green" style="width:100%;margin-top:4px">✓ Créer la campagne</button>
+          </div>
+        </div>
+
+        <!-- SIGNALEMENTS -->
+        <div id="as-signalements" class="screen">
+          <h2 style="font-size:20px;font-weight:600;margin-bottom:16px">Signalements</h2>
+          <div class="tab-bar" style="margin:0 0 16px">
+            <div class="tab active">En attente (23)</div>
+            <div class="tab">Traités</div>
+          </div>
+          <table class="web-table">
+            <thead><tr><th>Type</th><th>Signalé</th><th>Signalé par</th><th>Motif</th><th>Date</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><span class="badge badge-blue">Utilisateur</span></td>
+                <td>Lucas Moreau</td>
+                <td>Maëlle Dubois</td>
+                <td>Spam / Harcèlement</td>
+                <td>28 jan 2026</td>
+                <td style="display:flex;gap:4px;flex-wrap:wrap">
+                  <button class="btn btn-outline btn-sm">Voir profil</button>
+                  <button class="btn btn-orange btn-sm">Désactiver</button>
+                  <button class="btn btn-green btn-sm">Ignorer</button>
+                </td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-orange">Observation</span></td>
+                <td>Obs. #4521</td>
+                <td>Axel Martin</td>
+                <td>Contenu inapproprié</td>
+                <td>27 jan 2026</td>
+                <td style="display:flex;gap:4px;flex-wrap:wrap">
+                  <button class="btn btn-outline btn-sm">Voir obs.</button>
+                  <button class="btn btn-red btn-sm">Supprimer</button>
+                  <button class="btn btn-green btn-sm">Ignorer</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ARCHIVES -->
+        <div id="as-archives" class="screen">
+          <h2 style="font-size:20px;font-weight:600;margin-bottom:4px">Archives de la base de données</h2>
+          <p style="font-size:13px;color:var(--text2);margin-bottom:16px">Gestion des archives des observations, utilisateurs et espèces supprimées ou archivées.</p>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
+            <div class="stat-card-web"><div class="stat-n-web">1 248</div><div class="stat-l-web">Observations archivées</div></div>
+            <div class="stat-card-web"><div class="stat-n-web">42</div><div class="stat-l-web">Comptes désactivés</div></div>
+            <div class="stat-card-web"><div class="stat-n-web">8</div><div class="stat-l-web">Espèces supprimées</div></div>
+          </div>
+          <div class="tab-bar" style="margin:0 0 16px">
+            <div class="tab active">Observations</div>
+            <div class="tab">Utilisateurs</div>
+            <div class="tab">Espèces</div>
+          </div>
+          <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+            <input class="input" placeholder="🔍 Rechercher dans les archives..." style="max-width:300px;margin:0">
+            <input class="input" type="date" style="max-width:160px;margin:0">
+            <input class="input" type="date" style="max-width:160px;margin:0">
+            <button class="btn btn-green btn-sm">Filtrer</button>
+            <button class="btn btn-outline btn-sm" style="margin-left:auto">⬇ Exporter CSV</button>
+          </div>
+          <table class="web-table">
+            <thead><tr><th>Espèce</th><th>Observateur</th><th>Date obs.</th><th>Archivé le</th><th>Motif</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>Chien domestique</td>
+                <td>Denis Vellard</td>
+                <td>18 jan 2026</td>
+                <td>20 jan 2026</td>
+                <td><span class="badge badge-red">Refusée</span></td>
+                <td><button class="btn btn-outline btn-sm">Restaurer</button></td>
+              </tr>
+              <tr>
+                <td>Inconnu</td>
+                <td>Compte supprimé</td>
+                <td>10 déc 2025</td>
+                <td>15 jan 2026</td>
+                <td><span class="badge badge-gray">Signalement</span></td>
+                <td><button class="btn btn-outline btn-sm">Consulter</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- EXPERTS ADMIN -->
+        <div id="as-expert-admin" class="screen">
+          <div class="flex-between" style="margin-bottom:16px">
+            <h2 style="font-size:20px;font-weight:600">Gestion des experts</h2>
+            <button class="btn btn-green">＋ Ajouter un expert</button>
+          </div>
+          <table class="web-table" style="margin-bottom:20px">
+            <thead><tr><th>Nom</th><th>Email</th><th>Organisme</th><th>Spécialité</th><th>Validations</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>Denis Vellard</strong></td>
+                <td>denis.v@gmail.com</td>
+                <td>Biologiste indépendant</td>
+                <td>Arbres, Végétaux</td>
+                <td>124</td>
+                <td style="display:flex;gap:4px">
+                  <button class="btn btn-outline btn-sm">Profil</button>
+                  <button class="btn btn-orange btn-sm">→ Utilisateur</button>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Axel Martin</strong></td>
+                <td>axel.martin@gmail.com</td>
+                <td>LPO</td>
+                <td>Oiseaux</td>
+                <td>87</td>
+                <td style="display:flex;gap:4px">
+                  <button class="btn btn-outline btn-sm">Profil</button>
+                  <button class="btn btn-orange btn-sm">→ Utilisateur</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:8px;padding:16px;max-width:520px">
+            <div style="font-weight:600;font-size:14px;margin-bottom:12px">Ajouter un expert</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div><label class="label">Nom</label><input class="input" placeholder="Nom"></div>
+              <div><label class="label">Prénom</label><input class="input" placeholder="Prénom"></div>
+              <div><label class="label">Email</label><input class="input" type="email" placeholder="email@..."></div>
+              <div><label class="label">Organisme</label>
+                <select class="input"><option>Biologiste</option><option>Association</option><option>LPO</option><option>Organisme externe</option></select>
+              </div>
+            </div>
+            <label class="label">Spécialité</label>
+            <input class="input" placeholder="Ex : Ornithologie, Botanique...">
+            <button class="btn btn-green" style="width:100%;margin-top:6px">✓ Valider l'ajout</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showView(v){
+  ['mobile','expert','admin'].forEach(x=>{
+    document.getElementById('view-'+x).style.display=x===v?'block':'none';
+  });
+  document.querySelectorAll('.nav-tabs .nav-tab').forEach((b,i)=>{
+    b.classList.toggle('active',['mobile','expert','admin'][i]===v);
+  });
+}
+function showMobileScreen(s){
+  document.querySelectorAll('#view-mobile .screen').forEach(el=>el.classList.remove('active'));
+  var el=document.getElementById('ms-'+s);
+  if(el)el.classList.add('active');
+  document.querySelectorAll('#view-mobile .phone-bottom .bot-btn').forEach(b=>b.classList.remove('active'));
+  var map={'carte':0,'recenser':1,'campagnes':2,'messages':3,'profil':4};
+  if(map[s]!==undefined)document.querySelectorAll('#view-mobile .phone-bottom .bot-btn')[map[s]].classList.add('active');
+  // update secondary nav
+  document.querySelectorAll('#view-mobile .nav-tab').forEach(b=>{
+    var txt=b.getAttribute('onclick').match(/'([^']+)'/)[1];
+    b.classList.toggle('active',txt===s);
+  });
+}
+function showExpertScreen(s){
+  var sidebar=document.getElementById('expert-sidebar');
+  if(s==='observations'){
+    sidebar.style.display='';
+    document.querySelectorAll('.web-body .web-content .screen').forEach(el=>el.classList.remove('active'));
+    document.getElementById('es-validees').classList.add('active');
+    showExpertSub('validees');
+  } else {
+    showExpertSub(s);
+  }
+  document.querySelectorAll('.web-header .web-nav .web-nav-btn').forEach(b=>{
+    var t=b.getAttribute('onclick').match(/'([^']+)'/)[1];
+    b.classList.toggle('active',t===s);
+  });
+}
+function showExpertSub(s){
+  document.querySelectorAll('#view-expert .web-content .screen').forEach(el=>el.classList.remove('active'));
+  var el=document.getElementById('es-'+s);
+  if(el)el.classList.add('active');
+  document.querySelectorAll('#view-expert .side-item').forEach(b=>{
+    var t=b.getAttribute('onclick').match(/'([^']+)'/)[1];
+    b.classList.toggle('active',t===s);
+  });
+}
+function showAdminScreen(s){
+  document.querySelectorAll('#view-admin .web-content .screen').forEach(el=>el.classList.remove('active'));
+  var el=document.getElementById('as-'+s);
+  if(el)el.classList.add('active');
+  document.querySelectorAll('.web-header .web-nav .web-nav-btn').forEach(b=>{
+    var t=b.getAttribute('onclick').match(/'([^']+)'/)[1];
+    b.classList.toggle('active',t===s);
+  });
+}
+</script>
